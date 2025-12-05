@@ -97,3 +97,21 @@ export async function getStaffList() {
         return [];
     }
 }
+
+export async function updateTaskStatus(taskId: number, newStatus: string) {
+    try {
+        const session = await getSession();
+        if (!session) return { success: false, error: "Unauthorized" };
+
+        await db.update(tasks)
+            .set({ status: newStatus, updatedAt: new Date() })
+            .where(eq(tasks.id, taskId));
+
+        revalidatePath("/staff/dashboard");
+        revalidatePath("/partner/dashboard");
+        return { success: true };
+    } catch (error) {
+        console.error("Update Task Status Error:", error);
+        return { success: false, error: "Failed to update status" };
+    }
+}

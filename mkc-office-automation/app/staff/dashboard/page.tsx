@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Play, Pause, Send, CheckCircle, Clock, AlertCircle, Coffee, Link as LinkIcon, Download, Calendar } from "lucide-react";
-import { getStaffTasks } from "@/app/actions/tasks";
+import { getStaffTasks, updateTaskStatus } from "@/app/actions/tasks";
 import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
 import { getStaffState, toggleCheckIn, updateActivity } from "@/app/actions/attendance";
@@ -188,8 +188,8 @@ export default function StaffDashboard() {
                                                 <div className="flex justify-between items-start mb-2">
                                                     <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{task.title}</h4>
                                                     <span className={`px-2 py-1 text-xs rounded-full capitalize ${task.priority === 'urgent' ? 'bg-red-100 text-red-700' :
-                                                            task.priority === 'high' ? 'bg-orange-100 text-orange-700' :
-                                                                'bg-blue-100 text-blue-700'
+                                                        task.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+                                                            'bg-blue-100 text-blue-700'
                                                         }`}>
                                                         {task.priority || 'medium'}
                                                     </span>
@@ -219,10 +219,28 @@ export default function StaffDashboard() {
                                                         </a>
                                                     )}
 
-                                                    <div className="ml-auto flex items-center gap-2">
-                                                        <span className={`w-2 h-2 rounded-full ${task.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
-                                                            }`}></span>
-                                                        <span className="capitalize">{task.status}</span>
+                                                    <div className="ml-auto">
+                                                        <select
+                                                            value={task.status}
+                                                            onChange={async (e) => {
+                                                                const newStatus = e.target.value;
+                                                                // Optimistic update logic could go here, for now just reload
+                                                                await updateTaskStatus(task.id, newStatus);
+                                                                // Reload tasks
+                                                                const updated = await getStaffTasks();
+                                                                setTasks(updated);
+                                                            }}
+                                                            className={`text-xs font-medium px-2 py-1 rounded-full border-0 outline-none cursor-pointer ${task.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                                                    task.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                                                                        task.status === 'review' ? 'bg-purple-100 text-purple-700' :
+                                                                            'bg-yellow-100 text-yellow-700'
+                                                                }`}
+                                                        >
+                                                            <option value="pending">Pending</option>
+                                                            <option value="in-progress">In Progress</option>
+                                                            <option value="review">For Review</option>
+                                                            <option value="completed">Completed</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
