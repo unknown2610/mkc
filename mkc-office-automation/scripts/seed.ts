@@ -9,7 +9,6 @@ const STAFF = [
     { name: "Rizwan", email: "rizwan@mkc.com", role: "staff" },
     { name: "Nishant", email: "nishant@mkc.com", role: "article" },
     { name: "Gurpreet", email: "gurpreet@mkc.com", role: "article" },
-    { name: "Arjun Singh", email: "arjun@mkc.com", role: "staff" },
 ];
 
 const PARTNERS = [
@@ -17,7 +16,6 @@ const PARTNERS = [
     { name: "CA Ishan", email: "ishan@mkc.com", role: "partner" },
     { name: "CA Kashish", email: "kashish@mkc.com", role: "partner" },
     { name: "CA Kavish", email: "kavish@mkc.com", role: "partner" },
-    { name: "Kartik Mahajan", email: "kartik@mkc.com", role: "partner" },
 ];
 
 async function main() {

@@ -1,6 +1,4 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-
+import 'dotenv/config';
 import { db } from "../lib/db";
 import { sql } from "drizzle-orm";
 

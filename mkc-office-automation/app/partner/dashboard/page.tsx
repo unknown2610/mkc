@@ -192,15 +192,15 @@ export default function PartnerDashboard() {
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-slate-500">Avg. Check-in Time</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">10:14 AM</span>
+                                        <span className="font-medium text-slate-900 dark:text-white">--:--</span>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-slate-500">Reports Submitted</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">12 / 18</span>
+                                        <span className="font-medium text-slate-900 dark:text-white">0</span>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-slate-500">Tasks Completed</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">45</span>
+                                        <span className="font-medium text-slate-900 dark:text-white">0</span>
                                     </div>
                                 </div>
                             </div>
