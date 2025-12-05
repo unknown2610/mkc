@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+python-multipart
+# Add bank2excel dependencies here later (e.g., pandas, etc.)
