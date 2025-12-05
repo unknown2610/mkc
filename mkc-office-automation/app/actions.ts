@@ -17,23 +17,21 @@ export async function uploadFileToBackend(formData: FormData) {
         const response = await fetch(`${BACKEND_URL}/upload-file`, {
             method: "POST",
             body: backendFormData,
-            // specific headers might be needed depending on fetch implementation, 
-            // but usually FormData handles boundaries automatically.
-            // Next.js (Node) fetch might need 'duplex: half' for streaming bodies if usage is advanced,
-            // but standard form data usually works. 
+            // @ts-ignore - Required for Node.js fetch with FormData
+            duplex: "half",
         });
 
         if (!response.ok) {
             const errorText = await response.text();
             console.error("Backend Upload Error:", errorText);
-            throw new Error(`Upload failed: ${response.statusText}`);
+            throw new Error(`Upload failed: ${response.statusText} - ${errorText}`);
         }
 
         const result = await response.json();
         return { success: true, data: result };
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Server Action Error:", error);
-        return { success: false, error: "Failed to upload file to backend." };
+        return { success: false, error: error.message || "Failed to upload file to backend." };
     }
 }
