@@ -33,6 +33,8 @@
 - [x] **Initialize Project**: Deployed `mkc-office-automation` (Next.js) to Vercel.
 - [x] **Setup Backend**: Deployed to Google Cloud Run.
       - **Live URL**: `https://mkc-backend-service-238981963438.us-central1.run.app`
-- [ ] **Database Setup**: Connect Next.js to a database (Postgres).
-- [ ] **Integrate Bank2Excel**: Move the logic to the backend service.
-- [ ] **Build UI**: Continue polishing Partner/Staff dashboards.
+- [x] **Database Setup**: Connected Vercel Postgres & Pushed Schema.
+- [x] **File Upload**: Added generic `FileUpload` component to Staff Dashboard.
+- [ ] **Connect Upload to Backend**: Wire staff upload to Python Backend.
+- [ ] **Google Drive Integration**: Backend saves uploaded files to shared Google Drive folder.
+- [ ] **Data Wiring**: Fetch real tasks/activity from DB.

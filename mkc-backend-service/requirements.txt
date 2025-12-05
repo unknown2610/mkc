@@ -1,4 +1,6 @@
 fastapi
 uvicorn
 python-multipart
-# Add bank2excel dependencies here later (e.g., pandas, etc.)
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
