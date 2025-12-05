@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/lib/db";
 import { attendance, activityLogs, users } from "@/lib/schema";
 import { eq, and, desc, isNull, ne } from "drizzle-orm";
