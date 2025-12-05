@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { attendance, activityLogs, users } from "@/lib/schema";
-import { eq, and, desc, isNull } from "drizzle-orm";
+import { eq, and, desc, isNull, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // Hardcoded for Demo
@@ -103,7 +103,6 @@ export async function updateActivity(activityText: string) {
             userId: user.id,
             activity: activityText
         });
-
         revalidatePath("/partner/dashboard");
         return { success: true };
 
@@ -116,14 +115,11 @@ export async function updateActivity(activityText: string) {
 export async function getAllStaffStatus() {
     try {
         // Get all users who are NOT partners (so staff, managers, articles)
-        // For demo, we might just get everyone or filter by role
         const allUsers = await db.query.users.findMany({
-            where: eq(users.role, 'staff')
+            where: ne(users.role, 'partner')
         });
 
         // For each user, get their status
-        // Note: In a high-scale app, we would use a single JOIN query. 
-        // For < 50 staff, parallel queries are fine and easier to maintain.
         const statusPromises = allUsers.map(async (user) => {
 
             // 1. Check if they are currently checked in
@@ -144,12 +140,11 @@ export async function getAllStaffStatus() {
             // Determine Status string
             let status = 'offline';
             if (activeSession) status = 'online';
-            // We could calculate 'away' if last activity was > 30 mins ago, but let's keep it simple
 
             return {
                 id: user.id,
                 name: user.name,
-                role: "Staff Member", // We could add specific titles to the User table later
+                role: user.role === 'staff' ? "Staff" : "Article", // Simple mapping for now
                 status: status,
                 activity: lastLog?.activity || "No recent activity",
                 lastUpdate: lastLog?.timestamp ? new Date(lastLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"

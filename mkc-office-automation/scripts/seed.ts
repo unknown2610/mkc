@@ -5,33 +5,43 @@ import { db } from "../lib/db";
 import { users } from "../lib/schema";
 import { eq } from "drizzle-orm";
 
+const STAFF = [
+    { name: "Vishal", email: "vishal@mkc.com", role: "staff" },
+    { name: "Rizwan", email: "rizwan@mkc.com", role: "staff" },
+    { name: "Nishant", email: "nishant@mkc.com", role: "article" },
+    { name: "Gurpreet", email: "gurpreet@mkc.com", role: "article" },
+];
+
+const PARTNERS = [
+    { name: "CA Vineet", email: "vineet@mkc.com", role: "partner" },
+    { name: "CA Ishan", email: "ishan@mkc.com", role: "partner" },
+    { name: "CA Kashish", email: "kashish@mkc.com", role: "partner" },
+    { name: "CA Kavish", email: "kavish@mkc.com", role: "partner" },
+];
+
 async function main() {
     console.log("🌱 Seeding database...");
 
-    // 1. Create Staff User (Arjun)
-    const existingStaff = await db.select().from(users).where(eq(users.email, "arjun@mkc.com"));
-    if (existingStaff.length === 0) {
-        await db.insert(users).values({
-            name: "Arjun Singh",
-            email: "arjun@mkc.com",
-            role: "staff",
-        });
-        console.log("Created staff user: Arjun");
-    } else {
-        console.log("Staff user already exists.");
+    // Seed Staff
+    for (const staff of STAFF) {
+        const existing = await db.select().from(users).where(eq(users.email, staff.email));
+        if (existing.length === 0) {
+            await db.insert(users).values(staff);
+            console.log(`Created user: ${staff.name}`);
+        } else {
+            console.log(`User ${staff.name} already exists`);
+        }
     }
 
-    // 2. Create Partner User (Kartik)
-    const existingPartner = await db.select().from(users).where(eq(users.email, "kartik@mkc.com"));
-    if (existingPartner.length === 0) {
-        await db.insert(users).values({
-            name: "Kartik Mahajan",
-            email: "kartik@mkc.com",
-            role: "partner",
-        });
-        console.log("Created partner user: Kartik");
-    } else {
-        console.log("Partner user already exists.");
+    // Seed Partners
+    for (const partner of PARTNERS) {
+        const existing = await db.select().from(users).where(eq(users.email, partner.email));
+        if (existing.length === 0) {
+            await db.insert(users).values(partner);
+            console.log(`Created partner: ${partner.name}`);
+        } else {
+            console.log(`Partner ${partner.name} already exists`);
+        }
     }
 
     console.log("✅ Seeding complete!");
