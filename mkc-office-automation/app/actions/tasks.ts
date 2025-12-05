@@ -5,7 +5,7 @@ import { tasks, users } from "@/lib/schema";
 import { eq, desc } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { uploadFileToBackend } from "@/app/actions";
+import { put } from "@vercel/blob";
 
 export async function createTask(formData: FormData) {
     try {
@@ -28,15 +28,13 @@ export async function createTask(formData: FormData) {
 
         // Handle File Upload if present
         if (file && file.size > 0) {
-            const uploadFormData = new FormData();
-            uploadFormData.append("file", file);
-
-            const uploadResult = await uploadFileToBackend(uploadFormData);
-
-            if (uploadResult.success) {
-                fileUrl = uploadResult.data.view_link;
-            } else {
-                return { success: false, error: "File upload failed: " + uploadResult.error };
+            try {
+                const blob = await put(file.name, file, {
+                    access: 'public',
+                });
+                fileUrl = blob.url;
+            } catch (err) {
+                return { success: false, error: "Blob upload failed: " + (err as Error).message };
             }
         }
 
