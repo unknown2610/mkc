@@ -19,7 +19,7 @@ echo [2/3] Building Container Image...
 call gcloud builds submit --tag gcr.io/mkc-office-auto/mkc-backend-service .
 
 echo [3/3] Deploying to Cloud Run...
-call gcloud run deploy mkc-backend-service --image gcr.io/mkc-office-auto/mkc-backend-service --platform managed --region us-central1 --allow-unauthenticated
+call gcloud run deploy mkc-backend-service --image gcr.io/mkc-office-auto/mkc-backend-service --platform managed --region us-central1 --allow-unauthenticated --service-account drive-607@mkc-office-auto.iam.gserviceaccount.com
 
 echo ========================================================
 echo  Deployment script finished.
