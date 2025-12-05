@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, FileText, CheckCircle, Loader2 } from "lucide-react";
+import { Upload, X, FileText, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import { uploadFileToBackend } from "@/app/actions";
 
 interface FileUploadProps {
     onUploadComplete?: (fileUrl: string) => void;
-    endpoint?: string;
     label?: string;
 }
 
 export function FileUpload({ onUploadComplete, label = "Upload File" }: FileUploadProps) {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState(0);
     const [success, setSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +21,6 @@ export function FileUpload({ onUploadComplete, label = "Upload File" }: FileUplo
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
             setSuccess(false);
-            setProgress(0);
         }
     };
 
@@ -36,7 +35,6 @@ export function FileUpload({ onUploadComplete, label = "Upload File" }: FileUplo
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             setFile(e.dataTransfer.files[0]);
             setSuccess(false);
-            setProgress(0);
         }
     };
 
@@ -44,40 +42,32 @@ export function FileUpload({ onUploadComplete, label = "Upload File" }: FileUplo
         if (!file) return;
 
         setUploading(true);
-        // Simulate upload progress
-        const interval = setInterval(() => {
-            setProgress((prev) => {
-                if (prev >= 95) {
-                    clearInterval(interval);
-                    return 95;
-                }
-                return prev + 10;
-            });
-        }, 200);
 
         try {
-            // TODO: Replace with actual Server Action / API call
-            // const formData = new FormData();
-            // formData.append("file", file);
-            // await uploadAction(formData);
+            const formData = new FormData();
+            formData.append("file", file);
 
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating network
+            const result = await uploadFileToBackend(formData);
 
-            clearInterval(interval);
-            setProgress(100);
-            setSuccess(true);
-            if (onUploadComplete) onUploadComplete("https://fake-url.com/" + file.name);
+            if (result.success) {
+                setSuccess(true);
+                if (onUploadComplete) onUploadComplete(result.data?.view_link || "");
 
-            // Reset after success
-            setTimeout(() => {
-                setFile(null);
-                setSuccess(false);
-                setUploading(false);
-                setProgress(0);
-            }, 3000);
+                // Reset after success
+                setTimeout(() => {
+                    setFile(null);
+                    setSuccess(false);
+                    setUploading(false);
+                }, 3000);
+            } else {
+                console.error(result.error);
+                alert("Upload failed. Please try again.");
+            }
 
         } catch (error) {
             console.error("Upload failed", error);
+            alert("An error occurred during upload.");
+        } finally {
             setUploading(false);
         }
     };
@@ -123,13 +113,12 @@ export function FileUpload({ onUploadComplete, label = "Upload File" }: FileUplo
                         {success && <CheckCircle className="w-5 h-5 text-emerald-500" />}
                     </div>
 
-                    {uploading || success ? (
-                        <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div
-                                className={cn("h-full transition-all duration-300", success ? "bg-emerald-500" : "bg-blue-600")}
-                                style={{ width: `${progress}%` }}
-                            />
+                    {uploading ? (
+                        <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden relative">
+                            <div className="absolute inset-0 bg-blue-600 animate-pulse w-2/3" />
                         </div>
+                    ) : success ? (
+                        <div className="text-sm text-emerald-600 font-medium text-center">Upload Complete!</div>
                     ) : (
                         <button
                             onClick={uploadFile}

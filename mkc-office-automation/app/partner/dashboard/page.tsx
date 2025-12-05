@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Search, Filter, MoreHorizontal, FileText, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FileUpload } from "@/components/file-upload";
 
 // Mock Data
 const STAFF_MEMBERS = [
@@ -114,6 +115,13 @@ export default function PartnerDashboard() {
                         </div>
                         <p className="text-sm text-slate-300">Team is performing 15% better than last week.</p>
                     </div>
+
+                    {/* Quick Transfer */}
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-4 uppercase tracking-wider">Quick File Transfer</h3>
+                        <FileUpload label="Send File to Staff" />
+                    </div>
+
                 </div>
 
             </div>
