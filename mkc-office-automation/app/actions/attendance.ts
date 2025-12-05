@@ -112,3 +112,54 @@ export async function updateActivity(activityText: string) {
         return { success: false, error: "Failed to update activity" };
     }
 }
+
+export async function getAllStaffStatus() {
+    try {
+        // Get all users who are NOT partners (so staff, managers, articles)
+        // For demo, we might just get everyone or filter by role
+        const allUsers = await db.query.users.findMany({
+            where: eq(users.role, 'staff')
+        });
+
+        // For each user, get their status
+        // Note: In a high-scale app, we would use a single JOIN query. 
+        // For < 50 staff, parallel queries are fine and easier to maintain.
+        const statusPromises = allUsers.map(async (user) => {
+
+            // 1. Check if they are currently checked in
+            const activeSession = await db.query.attendance.findFirst({
+                where: and(
+                    eq(attendance.userId, user.id),
+                    isNull(attendance.checkOut)
+                ),
+                orderBy: desc(attendance.checkIn)
+            });
+
+            // 2. Get their latest activity log
+            const lastLog = await db.query.activityLogs.findFirst({
+                where: eq(activityLogs.userId, user.id),
+                orderBy: desc(activityLogs.timestamp)
+            });
+
+            // Determine Status string
+            let status = 'offline';
+            if (activeSession) status = 'online';
+            // We could calculate 'away' if last activity was > 30 mins ago, but let's keep it simple
+
+            return {
+                id: user.id,
+                name: user.name,
+                role: "Staff Member", // We could add specific titles to the User table later
+                status: status,
+                activity: lastLog?.activity || "No recent activity",
+                lastUpdate: lastLog?.timestamp ? new Date(lastLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"
+            };
+        });
+
+        return await Promise.all(statusPromises);
+
+    } catch (error) {
+        console.error("Get All Staff Status Error:", error);
+        return [];
+    }
+}

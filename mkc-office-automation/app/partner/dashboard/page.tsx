@@ -1,20 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Filter, MoreHorizontal, FileText, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
-
-// Mock Data
-const STAFF_MEMBERS = [
-    { id: 1, name: "Arjun Singh", role: "Senior Accountant", status: "online", activity: "Working on GST Return for Client A", lastUpdate: "2 mins ago" },
-    { id: 2, name: "Priya Sharma", role: "Article Assistant", status: "away", activity: "Lunch Break", lastUpdate: "25 mins ago" },
-    { id: 3, name: "Rahul Verma", role: "Audit Manager", status: "online", activity: "Reviewing Balance Sheet - XYZ Corp", lastUpdate: "Just now" },
-    { id: 4, name: "Simran Kaur", role: "Junior Associate", status: "offline", activity: "Checked out", lastUpdate: "5:30 PM yesterday" },
-];
+import { getAllStaffStatus } from "@/app/actions/attendance";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
+    const [staffList, setStaffList] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchStaffData = async () => {
+        try {
+            const data = await getAllStaffStatus();
+            setStaffList(data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Failed to load staff data");
+        }
+    };
+
+    // Poll for updates every 10 seconds
+    useEffect(() => {
+        fetchStaffData();
+        const interval = setInterval(fetchStaffData, 10000);
+        return () => clearInterval(interval);
+    }, []);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">Loading Partner Activity Center...</div>;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 md:p-12">
@@ -39,50 +53,56 @@ export default function PartnerDashboard() {
                 <div className="xl:col-span-2 space-y-6">
                     <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Live Staff Activity</h2>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
-                        {STAFF_MEMBERS.map((staff) => (
-                            <div
-                                key={staff.id}
-                                className={cn(
-                                    "bg-white dark:bg-slate-900 p-5 rounded-2xl border transition-all hover:shadow-md cursor-pointer group",
-                                    staff.status === 'online' ? "border-l-4 border-l-emerald-500 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800" :
-                                        staff.status === 'away' ? "border-l-4 border-l-amber-500 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800" :
-                                            "border-l-4 border-l-slate-300 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800 opacity-70"
-                                )}
-                                onClick={() => setSelectedStaff(staff.id)}
-                            >
-                                <div className="flex justify-between items-start mb-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 font-bold">
-                                            {staff.name.charAt(0)}
+                    {staffList.length === 0 ? (
+                        <div className="p-10 text-center text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300">
+                            No active staff members found.
+                        </div>
+                    ) : (
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            {staffList.map((staff) => (
+                                <div
+                                    key={staff.id}
+                                    className={cn(
+                                        "bg-white dark:bg-slate-900 p-5 rounded-2xl border transition-all hover:shadow-md cursor-pointer group",
+                                        staff.status === 'online' ? "border-l-4 border-l-emerald-500 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800" :
+                                            staff.status === 'away' ? "border-l-4 border-l-amber-500 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800" :
+                                                "border-l-4 border-l-slate-300 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800 opacity-70"
+                                    )}
+                                    onClick={() => setSelectedStaff(staff.id)}
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 font-bold">
+                                                {staff.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 transition-colors">{staff.name}</h3>
+                                                <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">{staff.role}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 transition-colors">{staff.name}</h3>
-                                            <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">{staff.role}</p>
+                                        <div className={cn(
+                                            "px-2.5 py-1 rounded-full text-xs font-bold capitalize",
+                                            staff.status === 'online' ? "bg-emerald-100 text-emerald-700" :
+                                                staff.status === 'away' ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"
+                                        )}>
+                                            {staff.status}
                                         </div>
                                     </div>
-                                    <div className={cn(
-                                        "px-2.5 py-1 rounded-full text-xs font-bold capitalize",
-                                        staff.status === 'online' ? "bg-emerald-100 text-emerald-700" :
-                                            staff.status === 'away' ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"
-                                    )}>
-                                        {staff.status}
+
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-100 dark:border-slate-800/50">
+                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            {staff.activity}
+                                        </p>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center justify-between text-xs text-slate-400 font-medium">
+                                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Updated {staff.lastUpdate}</span>
+                                        <button className="hover:text-blue-600">View History</button>
                                     </div>
                                 </div>
-
-                                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-100 dark:border-slate-800/50">
-                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                        {staff.activity}
-                                    </p>
-                                </div>
-
-                                <div className="mt-4 flex items-center justify-between text-xs text-slate-400 font-medium">
-                                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Updated {staff.lastUpdate}</span>
-                                    <button className="hover:text-blue-600">View History</button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Sidebar: Recent Updates / Stats */}
