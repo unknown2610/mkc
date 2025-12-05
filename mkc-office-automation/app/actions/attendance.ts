@@ -1,17 +1,19 @@
-"use server";
-
 import { db } from "@/lib/db";
 import { attendance, activityLogs, users } from "@/lib/schema";
 import { eq, and, desc, isNull, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-// Hardcoded for Demo
-const CURRENT_USER_EMAIL = "arjun@mkc.com";
+import { getSession } from "@/lib/auth";
+
+// ...
 
 export async function getStaffState() {
     try {
+        const session = await getSession();
+        if (!session) return { isCheckedIn: false, checkInTime: null, lastActivity: "" };
+
         const user = await db.query.users.findFirst({
-            where: eq(users.email, CURRENT_USER_EMAIL),
+            where: eq(users.id, session.id),
         });
 
         if (!user) return { isCheckedIn: false, checkInTime: null, lastActivity: "" };
@@ -44,8 +46,11 @@ export async function getStaffState() {
 
 export async function toggleCheckIn() {
     try {
+        const session = await getSession();
+        if (!session) throw new Error("Unauthorized");
+
         const user = await db.query.users.findFirst({
-            where: eq(users.email, CURRENT_USER_EMAIL),
+            where: eq(users.id, session.id),
         });
 
         if (!user) throw new Error("User not found");
@@ -93,8 +98,11 @@ export async function toggleCheckIn() {
 
 export async function updateActivity(activityText: string) {
     try {
+        const session = await getSession();
+        if (!session) throw new Error("Unauthorized");
+
         const user = await db.query.users.findFirst({
-            where: eq(users.email, CURRENT_USER_EMAIL),
+            where: eq(users.id, session.id),
         });
 
         if (!user) throw new Error("User not found");
