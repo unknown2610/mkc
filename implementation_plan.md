@@ -30,9 +30,9 @@
 - **Database**: SQLite (Dev) / Postgres (Prod).
 
 ## 5. Next Steps
-- [x] **Initialize Project**: Created `mkc-office-automation` (Next.js) for Vercel.
+- [x] **Initialize Project**: Deployed `mkc-office-automation` (Next.js) to Vercel.
 - [x] **Setup Backend**: Deployed to Google Cloud Run.
       - **Live URL**: `https://mkc-backend-service-238981963438.us-central1.run.app`
-- [ ] **Database Setup**: Connect Next.js to a database (SQLite/Postgres).
+- [ ] **Database Setup**: Connect Next.js to a database (Postgres).
 - [ ] **Integrate Bank2Excel**: Move the logic to the backend service.
 - [ ] **Build UI**: Continue polishing Partner/Staff dashboards.
