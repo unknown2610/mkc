@@ -28,6 +28,7 @@ export const tasks = pgTable('tasks', {
     assignedTo: integer('assigned_to').references(() => users.id),
     createdBy: integer('created_by').references(() => users.id),
     dueDate: timestamp('due_date'),
+    fileUrl: text('file_url'), // Link to Google Drive file
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

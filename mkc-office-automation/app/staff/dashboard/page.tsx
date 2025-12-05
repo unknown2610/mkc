@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Play, Pause, Send, CheckCircle, Clock, AlertCircle, Coffee } from "lucide-react";
+import { Play, Pause, Send, CheckCircle, Clock, AlertCircle, Coffee, Link as LinkIcon, Download, Calendar } from "lucide-react";
+import { getStaffTasks } from "@/app/actions/tasks";
 import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
 import { getStaffState, toggleCheckIn, updateActivity } from "@/app/actions/attendance";
@@ -15,6 +16,7 @@ export default function StaffDashboard() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [activeTab, setActiveTab] = useState<'daily' | 'tasks' | 'reports' | 'profile'>('daily');
     const [loading, setLoading] = useState(true);
+    const [tasks, setTasks] = useState<any[]>([]);
 
     // Fetch initial state
     useEffect(() => {
@@ -24,6 +26,9 @@ export default function StaffDashboard() {
                 setIsCheckedIn(state.isCheckedIn);
                 setCheckInTime(state.checkInTime ? new Date(state.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null);
                 setLastActivity(state.lastActivity);
+
+                const myTasks = await getStaffTasks();
+                setTasks(myTasks);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -172,8 +177,57 @@ export default function StaffDashboard() {
                             )}
 
                             {activeTab === 'tasks' && (
-                                <div className="text-center py-10 text-slate-500">
-                                    Task list integration coming soon.
+                                <div className="space-y-4">
+                                    {tasks.length === 0 ? (
+                                        <div className="text-center py-10 text-slate-500">
+                                            No tasks assigned yet.
+                                        </div>
+                                    ) : (
+                                        tasks.map((task) => (
+                                            <div key={task.id} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{task.title}</h4>
+                                                    <span className={`px-2 py-1 text-xs rounded-full capitalize ${task.priority === 'urgent' ? 'bg-red-100 text-red-700' :
+                                                            task.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+                                                                'bg-blue-100 text-blue-700'
+                                                        }`}>
+                                                        {task.priority || 'medium'}
+                                                    </span>
+                                                </div>
+
+                                                {task.description && (
+                                                    <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">{task.description}</p>
+                                                )}
+
+                                                <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                                    {task.dueDate && (
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Calendar className="w-4 h-4" />
+                                                            <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {task.fileUrl && (
+                                                        <a
+                                                            href={task.fileUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-medium"
+                                                        >
+                                                            <LinkIcon className="w-4 h-4" />
+                                                            View Attachment
+                                                        </a>
+                                                    )}
+
+                                                    <div className="ml-auto flex items-center gap-2">
+                                                        <span className={`w-2 h-2 rounded-full ${task.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
+                                                            }`}></span>
+                                                        <span className="capitalize">{task.status}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             )}
 
