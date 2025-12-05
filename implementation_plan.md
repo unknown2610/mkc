@@ -31,7 +31,8 @@
 
 ## 5. Next Steps
 - [x] **Initialize Project**: Created `mkc-office-automation` (Next.js) for Vercel.
-- [x] **Setup Backend**: Created `mkc-backend-service` (FastAPI) for Cloud Run.
+- [x] **Setup Backend**: Deployed to Google Cloud Run.
+      - **Live URL**: `https://mkc-backend-service-238981963438.us-central1.run.app`
 - [ ] **Database Setup**: Connect Next.js to a database (SQLite/Postgres).
 - [ ] **Integrate Bank2Excel**: Move the logic to the backend service.
 - [ ] **Build UI**: Continue polishing Partner/Staff dashboards.
