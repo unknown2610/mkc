@@ -35,6 +35,6 @@
       - **Live URL**: `https://mkc-backend-service-238981963438.us-central1.run.app`
 - [x] **Database Setup**: Connected Vercel Postgres & Pushed Schema.
 - [x] **File Upload**: Added generic `FileUpload` component to Staff Dashboard.
-- [ ] **Connect Upload to Backend**: Wire staff upload to Python Backend.
-- [ ] **Google Drive Integration**: Backend saves uploaded files to shared Google Drive folder.
+- [x] **Connect Upload to Backend**: Wired uploads to Python Backend via Server Actions.
+- [x] **Google Drive Integration**: Backend configured with ADC to save to shared Drive folder.
 - [ ] **Data Wiring**: Fetch real tasks/activity from DB.

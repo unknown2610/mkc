@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import { Play, Pause, Send, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
+import { getStaffState, toggleCheckIn, updateActivity } from "@/app/actions/attendance";
 
 // Mock Tasks
 const MOCK_TASKS = [
@@ -18,6 +18,19 @@ export default function StaffDashboard() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [activity, setActivity] = useState("");
     const [isActivitySaved, setIsActivitySaved] = useState(true);
+    const [loading, setLoading] = useState(true);
+
+    // Initial Data Fetch
+    useEffect(() => {
+        const loadState = async () => {
+            const state = await getStaffState();
+            setIsCheckedIn(state.isCheckedIn);
+            if (state.checkInTime) setCheckInTime(new Date(state.checkInTime));
+            if (state.lastActivity) setActivity(state.lastActivity);
+            setLoading(false);
+        };
+        loadState();
+    }, []);
 
     // Update clock
     useEffect(() => {
@@ -25,10 +38,17 @@ export default function StaffDashboard() {
         return () => clearInterval(interval);
     }, []);
 
-    const handleCheckIn = () => {
-        setIsCheckedIn(!isCheckedIn);
-        if (!isCheckedIn) {
-            setCheckInTime(new Date());
+    const handleCheckIn = async () => {
+        // Optimistic Update
+        const newState = !isCheckedIn;
+        setIsCheckedIn(newState);
+        if (newState) setCheckInTime(new Date());
+
+        const result = await toggleCheckIn();
+        if (!result.success) {
+            // Revert if failed
+            setIsCheckedIn(!newState);
+            alert("Failed to update status");
         }
     };
 
@@ -37,10 +57,16 @@ export default function StaffDashboard() {
         setIsActivitySaved(false);
     };
 
-    const saveActivity = () => {
-        // API Call would go here
-        setIsActivitySaved(true);
+    const saveActivity = async () => {
+        setIsActivitySaved(true); // Optimistic
+        const result = await updateActivity(activity);
+        if (!result.success) {
+            setIsActivitySaved(false);
+            alert("Failed to save activity");
+        }
     };
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">Loading Dashboard...</div>;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 md:p-12">
