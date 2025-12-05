@@ -150,7 +150,10 @@ export default function PartnerDashboard() {
                                                             {staff.status === 'online' ? 'Online' : 'Offline'}
                                                         </p>
                                                         <p className="text-xs text-slate-400 mt-1">
-                                                            {staff.status === 'online' ? `Since ${staff.lastUpdate}` : `Last seen ${staff.lastUpdate}`}
+                                                            {staff.status === 'online'
+                                                                ? `Since ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
+                                                                : `Last seen ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
+                                                            }
                                                         </p>
                                                     </div>
                                                 </div>

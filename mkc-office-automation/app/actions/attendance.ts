@@ -157,7 +157,7 @@ export async function getAllStaffStatus() {
                 role: user.role === 'staff' ? "Staff" : "Article", // Simple mapping for now
                 status: status,
                 activity: lastLog?.activity || "No recent activity",
-                lastUpdate: lastLog?.timestamp ? new Date(lastLog.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"
+                lastUpdate: lastLog?.timestamp ? new Date(lastLog.timestamp).toISOString() : null
             };
         });
 
