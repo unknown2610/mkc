@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 
-import { Play, Pause, Send, Upload, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Play, Pause, Send, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FileUpload } from "@/components/file-upload";
 
 // Mock Tasks
 const MOCK_TASKS = [
@@ -152,13 +153,14 @@ export default function StaffDashboard() {
                             className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 min-h-[120px] focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                             placeholder="Summarize your day..."
                         />
-                        <div className="mt-4 flex justify-between items-center">
-                            <button className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
-                                <Upload className="w-4 h-4" /> Attach Files
-                            </button>
-                            <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2 transition-colors">
-                                <Send className="w-4 h-4" /> Submit Report
-                            </button>
+                        <div className="mt-4 flex flex-col gap-4">
+                            <FileUpload label="Attach Supporting Documents (e.g. Working Papers)" />
+
+                            <div className="flex justify-end">
+                                <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2 transition-colors">
+                                    <Send className="w-4 h-4" /> Submit Report
+                                </button>
+                            </div>
                         </div>
                     </div>
 
