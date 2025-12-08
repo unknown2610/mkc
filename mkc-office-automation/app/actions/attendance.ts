@@ -47,6 +47,17 @@ export async function getStaffState() {
     }
 }
 
+export async function getUserInfo() {
+    try {
+        const session = await getSession();
+        if (!session) return { name: "", role: "" };
+        return { name: session.name, role: session.role };
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        return { name: "", role: "" };
+    }
+}
+
 export async function toggleCheckIn() {
     try {
         const session = await getSession();

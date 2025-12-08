@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Filter, MoreHorizontal, FileText, CheckCircle2, Clock, Target, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
-import { getAllStaffStatus } from "@/app/actions/attendance";
+import { getAllStaffStatus, getUserInfo } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { createTask, getStaffList } from "@/app/actions/tasks";
 
@@ -13,6 +13,7 @@ export default function PartnerDashboard() {
     const [staffList, setStaffList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'profile'>('overview');
+    const [userName, setUserName] = useState("");
 
     // Fetch Staff Data
     const fetchStaffData = async () => {
@@ -29,6 +30,11 @@ export default function PartnerDashboard() {
     useEffect(() => {
         if (activeTab === 'overview') {
             fetchStaffData();
+            // Fetch user name from session
+            (async () => {
+                const userInfo = await getUserInfo();
+                if (userInfo.name) setUserName(userInfo.name);
+            })();
             const interval = setInterval(fetchStaffData, 10000);
             return () => clearInterval(interval);
         }
@@ -48,7 +54,7 @@ export default function PartnerDashboard() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Partner Dashboard</h1>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{userName ? `${userName}'s Dashboard` : 'Partner Dashboard'}</h1>
                         <p className="text-slate-500 dark:text-slate-400 mt-1">Real-time overview of office activity</p>
                     </div>
                     <div className="flex items-center gap-3">
