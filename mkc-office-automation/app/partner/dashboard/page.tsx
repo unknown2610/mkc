@@ -18,7 +18,7 @@ export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
     const [staffList, setStaffList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'history' | 'profile'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'history' | 'profile' | 'office'>('overview');
     const [userName, setUserName] = useState("");
 
     // Staff Detail Dialog state
@@ -235,141 +235,128 @@ export default function PartnerDashboard() {
                         <h2 className="text-xl font-semibold mb-6">My Profile</h2>
                         <ChangePasswordForm />
                     </div>
-                )}
-
-                {activeTab === 'reports' && (
-                    <DailyReportsView />
-                )}
-            </div>
-
-            {/* Staff Detail Dialog */}
-            <StaffDetailDialog
-                isOpen={showStaffDetail}
-                onClose={() => setShowStaffDetail(false)}
-                staffId={selectedStaffId}
-            />
         </div>
-    );
+            );
 }
 
-function ChangePasswordForm() {
+            function ChangePasswordForm() {
     const [loading, setLoading] = useState(false);
-    const [msg, setMsg] = useState("");
-    const [isError, setIsError] = useState(false);
+            const [msg, setMsg] = useState("");
+            const [isError, setIsError] = useState(false);
 
-    async function onSubmit(formData: FormData) {
-        setLoading(true);
-        setMsg("");
-        setIsError(false);
+            async function onSubmit(formData: FormData) {
+                setLoading(true);
+            setMsg("");
+            setIsError(false);
 
-        const result = await changePasswordAction(formData);
+            const result = await changePasswordAction(formData);
 
-        if (result.success) {
-            setMsg("Password updated successfully!");
+            if (result.success) {
+                setMsg("Password updated successfully!");
         } else {
-            setMsg("Error: " + (result.error || "Unknown error"));
+                setMsg("Error: " + (result.error || "Unknown error"));
             setIsError(true);
         }
-        setLoading(false);
+            setLoading(false);
     }
 
-    return (
-        <form action={onSubmit} className="space-y-4 max-w-md">
-            <div>
-                <label className="block text-sm font-medium mb-1">Current Password</label>
-                <input type="password" name="current" className="w-full p-2 border rounded" required />
-            </div>
-            <div>
-                <label className="block text-sm font-medium mb-1">New Password</label>
-                <input type="password" name="new" className="w-full p-2 border rounded" required />
-            </div>
-            <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
-                {loading ? "Updating..." : "Update Password"}
-            </button>
-            {msg && <p className={`text-sm mt-2 ${isError ? "text-red-500" : "text-green-500"}`}>{msg}</p>}
-        </form>
-    )
-}
-
-function TaskAssignmentForm() {
-    const [staff, setStaff] = useState<any[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [msg, setMsg] = useState("");
-    const [isError, setIsError] = useState(false);
-    const formRef = useState<HTMLFormElement | null>(null); // Actually let's use a simpler ref approach or reset form via key
-
-    useEffect(() => {
-        getStaffList().then(setStaff);
-    }, []);
-
-    async function onSubmit(formData: FormData) {
-        setLoading(true);
-        setMsg("");
-        setIsError(false);
-
-        // Manual validation if needed, but required props handle mostly
-        const result = await createTask(formData);
-
-        if (result.success) {
-            setMsg("Task assigned successfully!");
-            // Reset form could be handled by key reset or other means. For now simpler message.
-        } else {
-            setMsg("Error: " + (result.error || "Unknown error"));
-            setIsError(true);
-        }
-        setLoading(false);
-    }
-
-    return (
-        <form action={onSubmit} className="space-y-5">
-            <div>
-                <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Task Title</label>
-                <input name="title" type="text" required placeholder="e.g. Audit Report for Client X"
-                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            return (
+            <form action={onSubmit} className="space-y-4 max-w-md">
                 <div>
-                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Assign To</label>
-                    <select name="assignedTo" required
-                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
-                    >
-                        <option value="">Select Staff</option>
-                        {staff.map(s => (
-                            <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
-                        ))}
-                    </select>
+                    <label className="block text-sm font-medium mb-1">Current Password</label>
+                    <input type="password" name="current" className="w-full p-2 border rounded" required />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Deadline</label>
-                    <input name="deadline" type="date"
+                    <label className="block text-sm font-medium mb-1">New Password</label>
+                    <input type="password" name="new" className="w-full p-2 border rounded" required />
+                </div>
+                <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+                    {loading ? "Updating..." : "Update Password"}
+                </button>
+                {msg && <p className={`text-sm mt-2 ${isError ? "text-red-500" : "text-green-500"}`}>{msg}</p>}
+            </form>
+            )
+}
+
+            function TaskAssignmentForm() {
+    const [staff, setStaff] = useState<any[]>([]);
+            const [loading, setLoading] = useState(false);
+            const [msg, setMsg] = useState("");
+            const [isError, setIsError] = useState(false);
+            const formRef = useState<HTMLFormElement | null>(null); // Actually let's use a simpler ref approach or reset form via key
+
+    useEffect(() => {
+                getStaffList().then(setStaff);
+    }, []);
+
+            async function onSubmit(formData: FormData) {
+                setLoading(true);
+            setMsg("");
+            setIsError(false);
+
+            // Manual validation if needed, but required props handle mostly
+            const result = await createTask(formData);
+
+            if (result.success) {
+                setMsg("Task assigned successfully!");
+            // Reset form could be handled by key reset or other means. For now simpler message.
+        } else {
+                setMsg("Error: " + (result.error || "Unknown error"));
+            setIsError(true);
+        }
+            setLoading(false);
+    }
+
+            return (
+            <form action={onSubmit} className="space-y-5">
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Task Title</label>
+                    <input name="title" type="text" required placeholder="e.g. Audit Report for Client X"
                         className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                 </div>
-            </div>
 
-            <div>
-                <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Description (Optional)</label>
-                <textarea name="description" rows={3}
-                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
-                ></textarea>
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Attach File (Optional)</label>
-                <input type="file" name="file" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-400" />
-            </div>
-
-            <button disabled={loading} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50">
-                {loading ? "Assigning..." : "Assign Task"}
-            </button>
-
-            {msg && (
-                <div className={`p-3 rounded-lg text-sm ${isError ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400" : "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"}`}>
-                    {msg}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Assign To</label>
+                        <select name="assignedTo" required
+                            className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="">Select Staff</option>
+                            {staff.map(s => (
+                                <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Deadline</label>
+                        <input name="deadline" type="date"
+                            className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                    </div>
                 </div>
-            )}
-        </form>
-    );
+
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Description (Optional)</label>
+                    <textarea name="description" rows={3}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Attach File (Optional)</label>
+                    <input type="file" name="file" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-400" />
+                </div>
+
+                <button disabled={loading} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50">
+                    {loading ? "Assigning..." : "Assign Task"}
+                </button>
+
+                {msg && (
+                    <div className={`p-3 rounded-lg text-sm ${isError ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400" : "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"}`}>
+                        {msg}
+                    </div>
+                )}
+            </form>
+            );
 }
