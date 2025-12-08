@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
 import { getStaffState, toggleCheckIn, updateActivity } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
-import { submitDailyReport, getMyReports } from "@/app/actions/reports";
 
 export default function StaffDashboard() {
     const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -18,7 +17,7 @@ export default function StaffDashboard() {
     const [activeTab, setActiveTab] = useState<'daily' | 'tasks' | 'reports' | 'profile'>('daily');
     const [loading, setLoading] = useState(true);
     const [tasks, setTasks] = useState<any[]>([]);
-    const [reports, setReports] = useState<any[]>([]);
+    const [userName, setUserName] = useState("");
 
     // Fetch initial state
     useEffect(() => {
@@ -28,12 +27,10 @@ export default function StaffDashboard() {
                 setIsCheckedIn(state.isCheckedIn);
                 setCheckInTime(state.checkInTime ? new Date(state.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null);
                 setLastActivity(state.lastActivity);
+                setUserName(state.userName || "");
 
                 const myTasks = await getStaffTasks();
                 setTasks(myTasks);
-
-                const myReports = await getMyReports();
-                setReports(myReports);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -87,7 +84,7 @@ export default function StaffDashboard() {
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Staff Dashboard</h1>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{userName ? `${userName}'s Dashboard` : 'Staff Dashboard'}</h1>
                         <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your day efficiently</p>
                     </div>
                     <button onClick={handleLogout} className="px-4 py-2 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors">
@@ -251,159 +248,65 @@ export default function StaffDashboard() {
                                             </div>
                                         ))
                                     )}
+                                </div>
                             )}
 
-                                    {activeTab === 'reports' && (
-                                        <div className="space-y-8">
-                                            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-                                                <h3 className="text-lg font-semibold mb-4">Submit Daily Report</h3>
-                                                <DailyReportForm onReportSubmitted={async () => {
-                                                    const updated = await getMyReports();
-                                                    setReports(updated);
-                                                }} />
-                                            </div>
-
-                                            <div>
-                                                <h3 className="text-lg font-semibold mb-4">Your History</h3>
-                                                <div className="space-y-4">
-                                                    {reports.length === 0 ? (
-                                                        <p className="text-slate-500">No reports submitted yet.</p>
-                                                    ) : (
-                                                        reports.map((report) => (
-                                                            <div key={report.id} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                                                                <div className="flex justify-between items-start mb-2">
-                                                                    <span className="font-medium text-slate-900 dark:text-white">
-                                                                        {new Date(report.date).toLocaleDateString()}
-                                                                    </span>
-                                                                    <span className="text-xs text-slate-500">
-                                                                        {new Date(report.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                                    </span>
-                                                                </div>
-                                                                <p className="text-slate-600 dark:text-slate-300 text-sm whitespace-pre-wrap">{report.summary}</p>
-                                                                {report.tasksCompleted > 0 && (
-                                                                    <div className="mt-2 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded inline-block">
-                                                                        {report.tasksCompleted} Tasks Completed
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        ))
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {activeTab === 'profile' && (
-                                        <div className="max-w-md">
-                                            <h3 className="text-lg font-semibold mb-4">Change Password</h3>
-                                            <ChangePasswordForm />
-                                        </div>
-                                    )}
+                            {activeTab === 'reports' && (
+                                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-12 text-center">
+                                    <p className="text-slate-500 dark:text-slate-400">Daily Reports feature coming soon...</p>
                                 </div>
+                            )}
+
+                            {activeTab === 'profile' && (
+                                <div className="max-w-md">
+                                    <h3 className="text-lg font-semibold mb-4">Change Password</h3>
+                                    <ChangePasswordForm />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 
-                    </div>
+            </div>
         </div>
-            );
+    );
 }
 
-            function ChangePasswordForm() {
+function ChangePasswordForm() {
     const [loading, setLoading] = useState(false);
-            const [msg, setMsg] = useState("");
-            const [isError, setIsError] = useState(false);
+    const [msg, setMsg] = useState("");
+    const [isError, setIsError] = useState(false);
 
-            async function onSubmit(formData: FormData) {
-                setLoading(true);
-            setMsg("");
-            setIsError(false);
+    async function onSubmit(formData: FormData) {
+        setLoading(true);
+        setMsg("");
+        setIsError(false);
 
-            const result = await changePasswordAction(formData);
+        const result = await changePasswordAction(formData);
 
-            if (result.success) {
-                setMsg("Password updated successfully!");
+        if (result.success) {
+            setMsg("Password updated successfully!");
         } else {
-                setMsg("Error: " + (result.error || "Unknown error"));
+            setMsg("Error: " + (result.error || "Unknown error"));
             setIsError(true);
         }
-            setLoading(false);
+        setLoading(false);
     }
 
-            return (
-            <form action={onSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1">Current Password</label>
-                    <input type="password" name="current" className="w-full p-2 border rounded" required />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">New Password</label>
-                    <input type="password" name="new" className="w-full p-2 border rounded" required />
-                </div>
-                <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
-                    {loading ? "Updating..." : "Update Password"}
-                </button>
-                {msg && <p className={`text-sm mt-2 ${isError ? "text-red-500" : "text-green-500"}`}>{msg}</p>}
-            </form>
-            )
-}
-
-            function DailyReportForm({onReportSubmitted}: {onReportSubmitted: () => void }) {
-    const [loading, setLoading] = useState(false);
-            const [msg, setMsg] = useState("");
-            const [isError, setIsError] = useState(false);
-
-            async function onSubmit(formData: FormData) {
-                setLoading(true);
-            setMsg("");
-            setIsError(false);
-
-            const result = await submitDailyReport(formData);
-
-            if (result.success) {
-                setMsg("Report submitted successfully!");
-            onReportSubmitted();
-            // Optional: reset form
-        } else {
-                setMsg("Error: " + (result.error || "Unknown error"));
-            setIsError(true);
-        }
-            setLoading(false);
-    }
-
-            return (
-            <form action={onSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Summary of Work</label>
-                    <textarea
-                        name="summary"
-                        required
-                        rows={4}
-                        placeholder="e.g. Completed GST filing for Client X, Started Audit for Client Y..."
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                    ></textarea>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Tasks Completed (Count)</label>
-                    <input
-                        type="number"
-                        name="tasksCompleted"
-                        defaultValue="0"
-                        min="0"
-                        className="w-full md:w-1/3 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-
-                <button
-                    disabled={loading}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50"
-                >
-                    {loading ? "Submitting..." : "Submit Report"}
-                </button>
-
-                {msg && (
-                    <p className={`text-sm ${isError ? "text-red-500" : "text-green-500"}`}>{msg}</p>
-                )}
-            </form>
-            );
+    return (
+        <form action={onSubmit} className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium mb-1">Current Password</label>
+                <input type="password" name="current" className="w-full p-2 border rounded" required />
+            </div>
+            <div>
+                <label className="block text-sm font-medium mb-1">New Password</label>
+                <input type="password" name="new" className="w-full p-2 border rounded" required />
+            </div>
+            <button disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+                {loading ? "Updating..." : "Update Password"}
+            </button>
+            {msg && <p className={`text-sm mt-2 ${isError ? "text-red-500" : "text-green-500"}`}>{msg}</p>}
+        </form>
+    )
 }

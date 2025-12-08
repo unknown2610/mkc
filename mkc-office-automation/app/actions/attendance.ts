@@ -38,11 +38,12 @@ export async function getStaffState() {
         return {
             isCheckedIn: !!activeSession,
             checkInTime: activeSession?.checkIn || null,
-            lastActivity: lastLog?.activity || ""
+            lastActivity: lastLog?.activity || "",
+            userName: user.name
         };
     } catch (error) {
         console.error("Error fetching state:", error);
-        return { isCheckedIn: false, checkInTime: null, lastActivity: "" };
+        return { isCheckedIn: false, checkInTime: null, lastActivity: "", userName: "" };
     }
 }
 
