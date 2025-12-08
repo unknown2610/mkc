@@ -128,6 +128,49 @@ export async function toggleCheckIn() {
     }
 }
 
+/**
+ * Checkout with override - bypasses report check
+ * Should only be called after override has been logged
+ */
+export async function checkoutWithOverride() {
+    try {
+        const session = await getSession();
+        if (!session) throw new Error("Unauthorized");
+
+        const user = await db.query.users.findFirst({
+            where: eq(users.id, session.id),
+        });
+
+        if (!user) throw new Error("User not found");
+
+        // Find active session
+        const activeSession = await db.query.attendance.findFirst({
+            where: and(
+                eq(attendance.userId, user.id),
+                isNull(attendance.checkOut)
+            ),
+            orderBy: desc(attendance.checkIn)
+        });
+
+        if (!activeSession) {
+            return { success: false, error: "No active session found" };
+        }
+
+        // Proceed with checkout WITHOUT report validation
+        await db.update(attendance)
+            .set({ checkOut: new Date() })
+            .where(eq(attendance.id, activeSession.id));
+
+        revalidatePath("/partner/dashboard");
+        revalidatePath("/staff/dashboard");
+        return { success: true, isCheckedIn: false };
+
+    } catch (error) {
+        console.error("Checkout With Override Error:", error);
+        return { success: false, error: "Failed to checkout" };
+    }
+}
+
 export async function updateActivity(activityText: string) {
     try {
         const session = await getSession();

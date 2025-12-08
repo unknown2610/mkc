@@ -5,7 +5,7 @@ import { Play, Pause, Send, CheckCircle, Clock, AlertCircle, Coffee, Link as Lin
 import { getStaffTasks, updateTaskStatus } from "@/app/actions/tasks";
 import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
-import { getStaffState, toggleCheckIn, updateActivity } from "@/app/actions/attendance";
+import { getStaffState, toggleCheckIn, updateActivity, checkoutWithOverride } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { DailyReportDialog } from "@/components/DailyReportDialog";
 import { PendingReportsAlert } from "@/components/PendingReportsAlert";
@@ -72,8 +72,8 @@ export default function StaffDashboard() {
         setIsUpdating(true);
         try {
             await overrideCheckout();
-            // Now perform actual checkout
-            const result = await toggleCheckIn();
+            // Now perform actual checkout using override function that bypasses report check
+            const result = await checkoutWithOverride();
             if (result.success) {
                 setIsCheckedIn(false);
                 setCheckInTime(null);
