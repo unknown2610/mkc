@@ -312,3 +312,40 @@ export async function getStaffListForFilters() {
         return [];
     }
 }
+
+/**
+ * Get staff member's own report history
+ */
+export async function getMyReports() {
+    try {
+        const session = await getSession();
+        if (!session) return [];
+
+        const user = await db.query.users.findFirst({
+            where: eq(users.id, session.id),
+        });
+
+        if (!user) return [];
+
+        // Fetch all reports for this user
+        const reports = await db.query.dailyReports.findMany({
+            where: eq(dailyReports.userId, user.id),
+            orderBy: desc(dailyReports.reportDate),
+        });
+
+        return reports.map(report => ({
+            id: report.id,
+            reportDate: report.reportDate,
+            summary: report.summary,
+            tasksCompleted: report.tasksCompleted || 0,
+            overridden: report.overridden === 1,
+            overriddenAt: report.overriddenAt,
+            submittedAt: report.submittedAt,
+            updatedAt: report.updatedAt,
+        }));
+
+    } catch (error) {
+        console.error("Get My Reports Error:", error);
+        return [];
+    }
+}

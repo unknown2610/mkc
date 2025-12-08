@@ -10,6 +10,8 @@ import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { DailyReportDialog } from "@/components/DailyReportDialog";
 import { PendingReportsAlert } from "@/components/PendingReportsAlert";
 import { overrideCheckout } from "@/app/actions/reports";
+import { StaffReportsView } from "@/components/StaffReportsView";
+import { StaffTaskHistory } from "@/components/StaffTaskHistory";
 
 export default function StaffDashboard() {
     const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -17,7 +19,7 @@ export default function StaffDashboard() {
     const [lastActivity, setLastActivity] = useState("");
     const [activity, setActivity] = useState(""); // Input field state
     const [isUpdating, setIsUpdating] = useState(false);
-    const [activeTab, setActiveTab] = useState<'daily' | 'tasks' | 'reports' | 'profile'>('daily');
+    const [activeTab, setActiveTab] = useState<'daily' | 'tasks' | 'reports' | 'history' | 'profile'>('daily');
     const [loading, setLoading] = useState(true);
     const [tasks, setTasks] = useState<any[]>([]);
     const [userName, setUserName] = useState("");
@@ -156,22 +158,34 @@ export default function StaffDashboard() {
 
                 {isCheckedIn && (
                     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                        <div className="p-1 bg-slate-100 dark:bg-slate-800 m-2 rounded-xl flex">
+                        <div className="p-1 bg-slate-100 dark:bg-slate-800 m-2 rounded-xl flex flex-wrap gap-1">
                             <button
                                 onClick={() => setActiveTab('daily')}
-                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'daily' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all min-w-[100px] ${activeTab === 'daily' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                Current Activity
+                                Daily Activity
                             </button>
                             <button
                                 onClick={() => setActiveTab('tasks')}
-                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'tasks' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all min-w-[100px] ${activeTab === 'tasks' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
                             >
                                 My Tasks
                             </button>
                             <button
+                                onClick={() => setActiveTab('reports')}
+                                className={` flex-1 py-2.5 rounded-lg text-sm font-medium transition-all min-w-[100px] ${activeTab === 'reports' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                My Reports
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('history')}
+                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all min-w-[100px] ${activeTab === 'history' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Task History
+                            </button>
+                            <button
                                 onClick={() => setActiveTab('profile')}
-                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'profile' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+                                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all min-w-[100px] ${activeTab === 'profile' ? 'bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
                             >
                                 Profile
                             </button>
@@ -286,8 +300,14 @@ export default function StaffDashboard() {
                             )}
 
                             {activeTab === 'reports' && (
-                                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-12 text-center">
-                                    <p className="text-slate-500 dark:text-slate-400">Daily Reports feature coming soon...</p>
+                                <div className="p-6">
+                                    <StaffReportsView />
+                                </div>
+                            )}
+
+                            {activeTab === 'history' && (
+                                <div className="p-6">
+                                    <StaffTaskHistory />
                                 </div>
                             )}
 
