@@ -73,14 +73,14 @@ export function StaffDetailDialog({ isOpen, onClose, staffId }: StaffDetailDialo
         if (!staffId) return;
 
         try {
-            await createTask({
-                title: taskTitle,
-                description: taskDescription,
-                priority: taskPriority,
-                dueDate: taskDueDate,
-                fileUrl: taskFileUrl,
-                assignedTo: staffId,
-            });
+            const formData = new FormData();
+            formData.append('title', taskTitle);
+            formData.append('description', taskDescription);
+            formData.append('assignedTo', staffId.toString());
+            formData.append('deadline', taskDueDate);
+            // Note: fileUrl handling would need adjustment if using actual File objects
+
+            await createTask(formData);
 
             // Reset form
             setTaskTitle("");
