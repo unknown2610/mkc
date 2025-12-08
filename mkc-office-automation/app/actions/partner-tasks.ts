@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { tasks } from "@/lib/schema";
+import { tasks, users } from "@/lib/schema";
 import { getSession } from "@/lib/auth";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -16,21 +16,37 @@ export async function getPartnerTasks() {
             return { success: false, error: "Unauthorized", tasks: [] };
         }
 
+        // Fetch tasks created by this partner
         const partnerTasks = await db.query.tasks.findMany({
             where: eq(tasks.createdBy, session.id),
             orderBy: desc(tasks.createdAt),
-            with: {
-                assignedToUser: {
-                    columns: {
-                        name: true,
-                        email: true,
-                        role: true
-                    }
-                }
-            }
         });
 
-        return { success: true, tasks: partnerTasks };
+        // Manually fetch assigned user data for each task
+        const tasksWithUsers = await Promise.all(
+            partnerTasks.map(async (task) => {
+                if (task.assignedTo) {
+                    const assignedUser = await db.query.users.findFirst({
+                        where: eq(users.id, task.assignedTo),
+                        columns: {
+                            name: true,
+                            email: true,
+                            role: true
+                        }
+                    });
+                    return {
+                        ...task,
+                        assignedToUser: assignedUser || null
+                    };
+                }
+                return {
+                    ...task,
+                    assignedToUser: null
+                };
+            })
+        );
+
+        return { success: true, tasks: tasksWithUsers };
     } catch (error) {
         console.error("Get Partner Tasks Error:", error);
         return { success: false, error: "Failed to fetch tasks", tasks: [] };
