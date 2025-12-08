@@ -1,36 +1,4 @@
-"use client";
-
-import { useState } from 'react';
-import {
-    Calendar,
-    FileCheck,
-    Users,
-    DollarSign,
-    FileText,
-    Bell,
-    Clock,
-    AlertCircle,
-    TrendingUp,
-    CheckCircle,
-    Activity,
-    ArrowRight,
-    ExternalLink,
-    Download,
-    X
-} from 'lucide-react';
-
-interface SubItem {
-    name: string;
-    icon: any;
-    description: string;
-    benefits: string[];
-    demoComponent: () => JSX.Element;
-}
-
-interface Category {
-    name: string;
-    items: SubItem[];
-    color: string;
+color: string;
 }
 
 // Demo data
@@ -83,8 +51,8 @@ const DemoUpcomingDeadlines = () => (
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="font-semibold text-slate-900 dark:text-white">{item.client}</span>
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${item.status === 'urgent' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                        item.status === 'warning' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                                            'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                    item.status === 'warning' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                                     }`}>
                                     {item.daysLeft} days left
                                 </span>
@@ -154,8 +122,8 @@ const DemoPendingWork = () => (
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="font-semibold text-slate-900 dark:text-white">{item.work}</span>
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${item.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                        item.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                                            'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                    item.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                                     }`}>
                                     {item.priority}
                                 </span>
@@ -245,7 +213,7 @@ const DemoRecentUpdates = () => (
                                     {item.category}
                                 </span>
                                 <span className={`text-xs px-2 py-1 rounded ${item.impact === 'High' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                        'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                    'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                                     }`}>
                                     Impact: {item.impact}
                                 </span>
