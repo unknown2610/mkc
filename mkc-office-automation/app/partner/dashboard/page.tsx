@@ -316,10 +316,18 @@ function TaskAssignmentForm() {
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState("");
     const [isError, setIsError] = useState(false);
-    const formRef = useState<HTMLFormElement | null>(null); // Actually let's use a simpler ref approach or reset form via key
 
     useEffect(() => {
-        getStaffList().then(setStaff);
+        getStaffList()
+            .then(data => {
+                console.log("Fetched staff:", data);
+                setStaff(data);
+            })
+            .catch(err => {
+                console.error("Failed to fetch staff:", err);
+                setMsg("Failed to load staff list.");
+                setIsError(true);
+            });
     }, []);
 
     async function onSubmit(formData: FormData) {
@@ -327,21 +335,36 @@ function TaskAssignmentForm() {
         setMsg("");
         setIsError(false);
 
-        // Manual validation if needed, but required props handle mostly
-        const result = await createTask(formData);
+        const assignedTo = formData.get("assignedTo");
+        if (!assignedTo || assignedTo.toString() === "") {
+            setMsg("Please select a staff member to assign the task to.");
+            setIsError(true);
+            setLoading(false);
+            return;
+        }
 
-        if (result.success) {
-            setMsg("Task assigned successfully!");
-            // Reset form could be handled by key reset or other means. For now simpler message.
-        } else {
-            setMsg("Error: " + (result.error || "Unknown error"));
+        try {
+            const result = await createTask(formData);
+
+            if (result.success) {
+                setMsg("Task assigned successfully!");
+                // Reset the form manually
+                const form = document.getElementById("assign-task-form") as HTMLFormElement;
+                if (form) form.reset();
+            } else {
+                setMsg("Error: " + (result.error || "Unknown error"));
+                setIsError(true);
+            }
+        } catch (e) {
+            console.error("Task Submit Error:", e);
+            setMsg("An unexpected error occurred.");
             setIsError(true);
         }
         setLoading(false);
     }
 
     return (
-        <form action={onSubmit} className="space-y-5">
+        <form id="assign-task-form" action={onSubmit} className="space-y-5">
             <div>
                 <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Task Title</label>
                 <input name="title" type="text" required placeholder="e.g. Audit Report for Client X"
@@ -352,13 +375,17 @@ function TaskAssignmentForm() {
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Assign To</label>
-                    <select name="assignedTo" required
+                    <select name="assignedTo" required defaultValue=""
                         className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
                     >
-                        <option value="">Select Staff</option>
-                        {staff.map(s => (
-                            <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
-                        ))}
+                        <option value="" disabled>Select Staff</option>
+                        {staff.length === 0 ? (
+                            <option value="" disabled>No staff found</option>
+                        ) : (
+                            staff.map(s => (
+                                <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
+                            ))
+                        )}
                     </select>
                 </div>
                 <div>

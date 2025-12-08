@@ -41,17 +41,20 @@ export async function getLiveOverview() {
 
         // 4. Construct Live Status List
         const liveStatus = allStaff.map(staff => {
-            const att = attendanceRecords.find(a => a.userId === staff.id);
-            const isPresent = att?.status === 'present' && !att.checkOut; // Checked in and not checked out
-            // Logic: if checkOut exists, they left. If checkIn exists and no checkOut, they are here.
+            // Find ALL records for this user today
+            const userRecords = attendanceRecords.filter(a => a.userId === staff.id);
 
+            // Find if ANY record is an active session (no check-out)
+            const activeSession = userRecords.find(a => !a.checkOut);
+
+            // Find latest activity
             const lastLog = todayLogs.find(l => l.userId === staff.id);
 
             return {
                 ...staff,
-                isCheckedIn: !!isPresent,
-                checkInTime: att?.checkIn,
-                lastActivity: lastLog?.activity || (isPresent ? "Checked In" : "Offline"),
+                isCheckedIn: !!activeSession,
+                checkInTime: activeSession?.checkIn || null,
+                lastActivity: lastLog?.activity || (activeSession ? "Checked In" : "Offline"),
                 lastActivityTime: lastLog?.timestamp
             };
         });
