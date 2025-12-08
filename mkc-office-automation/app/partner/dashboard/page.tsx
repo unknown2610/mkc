@@ -7,12 +7,13 @@ import { FileUpload } from "@/components/file-upload";
 import { getAllStaffStatus, getUserInfo } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { createTask, getStaffList } from "@/app/actions/tasks";
+import TaskHistory from "@/components/TaskHistory";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
     const [staffList, setStaffList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'profile'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'history' | 'profile'>('overview');
     const [userName, setUserName] = useState("");
 
     // Fetch Staff Data
@@ -101,6 +102,15 @@ export default function PartnerDashboard() {
                             }`}
                     >
                         Assign Task
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('history')}
+                        className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === 'history'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                            }`}
+                    >
+                        Task History
                     </button>
                     <button
                         onClick={() => setActiveTab('profile')}
@@ -222,6 +232,12 @@ export default function PartnerDashboard() {
                     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 max-w-2xl">
                         <h2 className="text-xl font-semibold mb-6">Assign New Task</h2>
                         <TaskAssignmentForm />
+                    </div>
+                )}
+
+                {activeTab === 'history' && (
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-8">
+                        <TaskHistory />
                     </div>
                 )}
 
