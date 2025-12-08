@@ -73,14 +73,14 @@ export function StaffDetailDialog({ isOpen, onClose, staffId }: StaffDetailDialo
         if (!staffId) return;
 
         try {
-            await createTask(
-                taskTitle,
-                taskDescription,
-                taskPriority,
-                taskDueDate,
-                taskFileUrl,
-                staffId
-            );
+            await createTask({
+                title: taskTitle,
+                description: taskDescription,
+                priority: taskPriority,
+                dueDate: taskDueDate,
+                fileUrl: taskFileUrl,
+                assignedTo: staffId,
+            });
 
             // Reset form
             setTaskTitle("");
@@ -215,8 +215,8 @@ export function StaffDetailDialog({ isOpen, onClose, staffId }: StaffDetailDialo
                                     {attendanceHistory.map((record) => (
                                         <div key={record.date} className="text-center">
                                             <div className={`aspect-square rounded-lg flex items-center justify-center ${record.checkIn
-                                                    ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-900/50'
-                                                    : 'bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700'
+                                                ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-900/50'
+                                                : 'bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700'
                                                 }`}>
                                                 {record.checkIn ? (
                                                     <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -305,8 +305,8 @@ export function StaffDetailDialog({ isOpen, onClose, staffId }: StaffDetailDialo
                                                         )}
                                                     </div>
                                                     <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${task.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
-                                                            task.status === 'in-progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400' :
-                                                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                                                        task.status === 'in-progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400' :
+                                                            'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
                                                         }`}>
                                                         {task.status}
                                                     </span>
