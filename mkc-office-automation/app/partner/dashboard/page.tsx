@@ -10,6 +10,8 @@ import { createTask, getStaffList } from "@/app/actions/tasks";
 import TaskHistory from "@/components/TaskHistory";
 import DailyReportsView from "@/components/DailyReportsView";
 import { StaffDetailDialog } from "@/components/StaffDetailDialog";
+import { QuickActionsPanel } from "@/components/QuickActionsPanel";
+import { TodaysOverview } from "@/components/TodaysOverview";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
