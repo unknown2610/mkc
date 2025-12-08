@@ -8,6 +8,7 @@ import { getAllStaffStatus, getUserInfo } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { createTask, getStaffList } from "@/app/actions/tasks";
 import TaskHistory from "@/components/TaskHistory";
+import DailyReportsView from "@/components/DailyReportsView";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
@@ -249,9 +250,7 @@ export default function PartnerDashboard() {
                 )}
 
                 {activeTab === 'reports' && (
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-12 text-center text-slate-500">
-                        Reports module coming soon...
-                    </div>
+                    <DailyReportsView />
                 )}
             </div>
         </div>

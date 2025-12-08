@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { FileUpload } from "@/components/file-upload";
 import { getStaffState, toggleCheckIn, updateActivity } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
+import { DailyReportDialog } from "@/components/DailyReportDialog";
+import { PendingReportsAlert } from "@/components/PendingReportsAlert";
+import { overrideCheckout } from "@/app/actions/reports";
 
 export default function StaffDashboard() {
     const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -18,6 +21,8 @@ export default function StaffDashboard() {
     const [loading, setLoading] = useState(true);
     const [tasks, setTasks] = useState<any[]>([]);
     const [userName, setUserName] = useState("");
+    const [showReportDialog, setShowReportDialog] = useState(false);
+    const [reportDialogKey, setReportDialogKey] = useState(0);
 
     // Fetch initial state
     useEffect(() => {
@@ -47,11 +52,37 @@ export default function StaffDashboard() {
             if (result.success) {
                 setIsCheckedIn(!!result.isCheckedIn);
                 setCheckInTime(result.checkInTime ? new Date(result.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : null);
+            } else if (result.needsReport) {
+                // Show report dialog
+                setShowReportDialog(true);
             }
         } catch (e) {
             console.error(e);
         }
         setIsUpdating(false);
+    }
+
+    async function handleReportSubmitted() {
+        // Report submitted, now proceed with checkout
+        setReportDialogKey(prev => prev + 1);
+        await handleCheckIn(); // Try checkout again
+    }
+
+    async function handleOverrideCheckout() {
+        setIsUpdating(true);
+        try {
+            await overrideCheckout();
+            // Now perform actual checkout
+            const result = await toggleCheckIn();
+            if (result.success) {
+                setIsCheckedIn(false);
+                setCheckInTime(null);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsUpdating(false);
+        }
     }
 
     async function handleStatusUpdate(e: React.FormEvent) {
@@ -91,6 +122,9 @@ export default function StaffDashboard() {
                         Logout
                     </button>
                 </div>
+
+                {/* Pending Reports Alert */}
+                {isCheckedIn && <PendingReportsAlert />}
 
                 {/* Status Card */}
                 <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -268,6 +302,16 @@ export default function StaffDashboard() {
                 )}
 
             </div>
+
+            {/* Daily Report Dialog */}
+            <DailyReportDialog
+                key={reportDialogKey}
+                isOpen={showReportDialog}
+                onClose={() => setShowReportDialog(false)}
+                onSubmit={handleReportSubmitted}
+                onOverride={handleOverrideCheckout}
+                allowOverride={true}
+            />
         </div>
     );
 }

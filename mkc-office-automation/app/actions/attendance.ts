@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { attendance, activityLogs, users } from "@/lib/schema";
+import { attendance, activityLogs, users, dailyReports } from "@/lib/schema";
 import { eq, and, desc, isNull, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -79,7 +79,25 @@ export async function toggleCheckIn() {
         });
 
         if (activeSession) {
-            // Check Out
+            // Check Out - Verify daily report first
+            const today = new Date().toISOString().split('T')[0];
+            const todayReport = await db.query.dailyReports.findFirst({
+                where: and(
+                    eq(dailyReports.userId, user.id),
+                    eq(dailyReports.reportDate, today)
+                ),
+            });
+
+            // If no report or report is just an override placeholder, block checkout
+            if (!todayReport || todayReport.summary === "[Pending - Checkout Overridden]") {
+                return {
+                    success: false,
+                    needsReport: true,
+                    error: "Please submit your daily report before checking out"
+                };
+            }
+
+            // Proceed with checkout
             await db.update(attendance)
                 .set({ checkOut: new Date() })
                 .where(eq(attendance.id, activeSession.id));

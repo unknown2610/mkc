@@ -36,10 +36,14 @@ export const tasks = pgTable('tasks', {
 export const dailyReports = pgTable('daily_reports', {
     id: serial('id').primaryKey(),
     userId: integer('user_id').references(() => users.id).notNull(),
-    date: text('date').notNull(), // YYYY-MM-DD
+    date: text('date').notNull(), // YYYY-MM-DD (legacy field, keeping for compatibility)
+    reportDate: text('report_date').notNull(), // YYYY-MM-DD - The actual work date being reported
     summary: text('summary').notNull(),
     tasksCompleted: integer('tasks_completed').default(0),
+    overridden: integer('overridden').default(0).notNull(), // 0 = false, 1 = true (SQLite doesn't have boolean)
+    overriddenAt: timestamp('overridden_at'), // When the checkout was overridden without report
     submittedAt: timestamp('submitted_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(), // Track when reports are updated/submitted late
 });
 
 export const activityLogs = pgTable('activity_logs', {
