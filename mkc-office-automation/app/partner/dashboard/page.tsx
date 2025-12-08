@@ -7,12 +7,18 @@ import { FileUpload } from "@/components/file-upload";
 import { getAllStaffStatus } from "@/app/actions/attendance";
 import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { createTask, getStaffList } from "@/app/actions/tasks";
+import { getLiveOverview } from "@/app/actions/overview";
+import { getAllReports } from "@/app/actions/reports";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
     const [staffList, setStaffList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'profile'>('overview');
+
+    // Data State
+    const [overviewData, setOverviewData] = useState<any>(null);
+    const [reportsData, setReportsData] = useState<any[]>([]);
 
     // Fetch Staff Data
     const fetchStaffData = async () => {
@@ -111,6 +117,7 @@ export default function PartnerDashboard() {
                 {activeTab === 'overview' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Staff List */}
+                        {/* Staff List */}
                         <div className="lg:col-span-2 space-y-6">
                             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                                 <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
@@ -120,41 +127,41 @@ export default function PartnerDashboard() {
                                     </span>
                                 </div>
                                 <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {staffList.length === 0 ? (
-                                        <div className="p-8 text-center text-slate-500">No staff members found.</div>
+                                    {(!overviewData?.staffStatus || overviewData.staffStatus.length === 0) ? (
+                                        <div className="p-8 text-center text-slate-500">No staff activity found.</div>
                                     ) : (
-                                        staffList.map((staff) => (
+                                        overviewData.staffStatus.map((staff: any) => (
                                             <div
                                                 key={staff.id}
-                                                onClick={() => setSelectedStaff(staff.id)}
-                                                className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedStaff === staff.id ? 'bg-blue-50 dark:bg-blue-900/10' : ''}`}
+                                                // onClick={() => setSelectedStaff(staff.id)} // Optional: detailed view later
+                                                className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${staff.isCheckedIn ? "bg-green-50/10" : ""}`}
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center space-x-4">
                                                         <div className="relative">
-                                                            <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-medium">
+                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${staff.isCheckedIn ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"
+                                                                }`}>
                                                                 {staff.name.charAt(0)}
                                                             </div>
-                                                            <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 border-2 border-white dark:border-slate-900 rounded-full ${staff.status === 'online' ? 'bg-green-500' : 'bg-slate-400'
+                                                            <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 border-2 border-white dark:border-slate-900 rounded-full ${staff.isCheckedIn ? 'bg-green-500' : 'bg-slate-400'
                                                                 }`}></div>
                                                         </div>
                                                         <div>
-                                                            <h4 className="font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                            <h4 className="font-medium text-slate-900 dark:text-white">
                                                                 {staff.name}
                                                             </h4>
                                                             <p className="text-xs text-slate-500 dark:text-slate-400">{staff.role}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className={`text-sm font-medium ${staff.status === 'online' ? 'text-green-600 dark:text-green-400' : 'text-slate-500'
+                                                        <p className={`text-sm font-medium ${staff.isCheckedIn ? 'text-green-600 dark:text-green-400' : 'text-slate-500'
                                                             }`}>
-                                                            {staff.status === 'online' ? 'Online' : 'Offline'}
+                                                            {staff.isCheckedIn ? 'Online' : 'Offline'}
                                                         </p>
                                                         <p className="text-xs text-slate-400 mt-1">
-                                                            {staff.status === 'online'
-                                                                ? `Since ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
-                                                                : `Last seen ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
-                                                            }
+                                                            {staff.checkInTime
+                                                                ? `In: ${new Date(staff.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                                                                : 'Not checked in'}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -162,7 +169,7 @@ export default function PartnerDashboard() {
                                                 <div className="mt-3 pl-14">
                                                     <div className="inline-flex items-center text-sm text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
                                                         <Target className="w-3.5 h-3.5 mr-2 text-blue-500" />
-                                                        {staff.activity}
+                                                        {staff.lastActivity}
                                                     </div>
                                                 </div>
                                             </div>
@@ -195,16 +202,16 @@ export default function PartnerDashboard() {
                                 <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Today's Overview</h3>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-500">Avg. Check-in Time</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">--:--</span>
+                                        <span className="text-slate-500">Staff Present</span>
+                                        <span className="font-medium text-green-600 dark:text-green-400">{overviewData?.stats?.presentCount || 0}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-slate-500">Reports Submitted</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">0</span>
+                                        <span className="font-medium text-slate-900 dark:text-white">{overviewData?.stats?.reportsSubmittedCount || 0}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-slate-500">Tasks Completed</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">0</span>
+                                        <span className="font-medium text-slate-900 dark:text-white">{overviewData?.stats?.tasksCompletedToday || 0}</span>
                                     </div>
                                 </div>
                             </div>
@@ -227,8 +234,37 @@ export default function PartnerDashboard() {
                 )}
 
                 {activeTab === 'reports' && (
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-12 text-center text-slate-500">
-                        Reports module coming soon...
+                    <div className="space-y-6">
+                        <h2 className="text-xl font-semibold">Daily Activity Reports</h2>
+                        <div className="grid gap-4">
+                            {reportsData.length === 0 ? (
+                                <p className="text-slate-500">No reports found.</p>
+                            ) : (
+                                reportsData.map((report) => (
+                                    <div key={report.id} className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h4 className="font-bold text-slate-900 dark:text-white">{report.userName}</h4>
+                                                <p className="text-xs text-slate-500">Date: {new Date(report.date).toLocaleDateString()}</p>
+                                            </div>
+                                            <span className="text-xs font-mono text-slate-400">
+                                                {new Date(report.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                                            {report.summary}
+                                        </div>
+                                        {report.tasksCompleted > 0 && (
+                                            <div className="mt-3 flex items-center gap-2">
+                                                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-medium">
+                                                    {report.tasksCompleted} Tasks Completed
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
