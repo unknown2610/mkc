@@ -20,23 +20,37 @@ export default function PartnerDashboard() {
     const [overviewData, setOverviewData] = useState<any>(null);
     const [reportsData, setReportsData] = useState<any[]>([]);
 
-    // Fetch Staff Data
-    const fetchStaffData = async () => {
+    // Fetch Data Functions
+    const fetchOverview = async () => {
         try {
-            const data = await getAllStaffStatus();
-            setStaffList(data);
-            setLoading(false);
+            const data = await getLiveOverview();
+            if (data) {
+                setOverviewData(data);
+                setLoading(false);
+            }
         } catch (error) {
-            console.error("Failed to load staff data");
+            console.error("Failed to load overview data");
+            setLoading(false);
+        }
+    };
+    const fetchReports = async () => {
+        try {
+            const data = await getAllReports();
+            setReportsData(data);
+        } catch (error) {
+            console.error("Failed to load reports");
         }
     };
 
-    // Poll for updates every 10 seconds
+    // Effect for polling and initial load
     useEffect(() => {
         if (activeTab === 'overview') {
-            fetchStaffData();
-            const interval = setInterval(fetchStaffData, 10000);
+            fetchOverview();
+            const interval = setInterval(fetchOverview, 10000);
             return () => clearInterval(interval);
+        } else if (activeTab === 'reports') {
+            fetchReports();
+            // Optional: Poll reports? Maybe less frequent or just on mount
         }
     }, [activeTab]);
 
@@ -46,7 +60,7 @@ export default function PartnerDashboard() {
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">Loading Partner Activity Center...</div>;
 
-    const activeStaffCount = staffList.filter(s => s.status === 'online').length;
+    const activeStaffCount = overviewData?.stats?.presentCount || 0;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 md:p-12">
