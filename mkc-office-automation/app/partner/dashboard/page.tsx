@@ -261,6 +261,13 @@ export default function PartnerDashboard() {
                     <DailyReportsView />
                 )}
             </div>
+
+            {/* Staff Detail Dialog */}
+            <StaffDetailDialog
+                isOpen={showStaffDetail}
+                onClose={() => setShowStaffDetail(false)}
+                staffId={selectedStaffId}
+            />
         </div>
     );
 }
