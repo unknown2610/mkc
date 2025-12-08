@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, FileText, AlertTriangle, CheckCircle2, Plus } from "lucide-react";
+import { Calendar, FileText, AlertTriangle, CheckCircle2, Plus, Edit } from "lucide-react";
 import { getMyReports, getMyPendingReports } from "@/app/actions/reports";
 import { DailyReportDialog } from "./DailyReportDialog";
 
@@ -22,6 +22,8 @@ export function StaffReportsView() {
     const [loading, setLoading] = useState(true);
     const [showReportDialog, setShowReportDialog] = useState(false);
     const [selectedDate, setSelectedDate] = useState<string>("");
+    const [editingSummary, setEditingSummary] = useState<string>("");
+    const [editingTasksCompleted, setEditingTasksCompleted] = useState<number>(0);
 
     useEffect(() => {
         loadData();
@@ -40,11 +42,22 @@ export function StaffReportsView() {
 
     const handleNewReport = () => {
         setSelectedDate(new Date().toISOString().split('T')[0]);
+        setEditingSummary("");
+        setEditingTasksCompleted(0);
         setShowReportDialog(true);
     };
 
     const handleReportForDate = (date: string) => {
         setSelectedDate(date);
+        setEditingSummary("");
+        setEditingTasksCompleted(0);
+        setShowReportDialog(true);
+    };
+
+    const handleEditReport = (report: Report) => {
+        setSelectedDate(report.reportDate);
+        setEditingSummary(report.summary);
+        setEditingTasksCompleted(report.tasksCompleted);
         setShowReportDialog(true);
     };
 
@@ -189,11 +202,20 @@ export function StaffReportsView() {
                                         </p>
                                     </div>
                                 </div>
-                                {report.overridden && (
-                                    <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 text-xs font-medium rounded-full">
-                                        Late Submission
-                                    </span>
-                                )}
+                                <div className="flex items-center gap-2">
+                                    {report.overridden && (
+                                        <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 text-xs font-medium rounded-full">
+                                            Late Submission
+                                        </span>
+                                    )}
+                                    <button
+                                        onClick={() => handleEditReport(report)}
+                                        className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
+                                    >
+                                        <Edit className="w-3.5 h-3.5" />
+                                        Edit
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 mb-2">
@@ -216,6 +238,8 @@ export function StaffReportsView() {
                 onClose={() => setShowReportDialog(false)}
                 onSubmit={handleReportSubmitted}
                 defaultDate={selectedDate}
+                defaultSummary={editingSummary}
+                defaultTasksCompleted={editingTasksCompleted}
                 allowOverride={false}
             />
         </div>

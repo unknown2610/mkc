@@ -11,6 +11,8 @@ interface DailyReportDialogProps {
     onOverride?: () => void;
     defaultDate?: string; // For submitting late reports
     allowOverride?: boolean; // Show override button
+    defaultSummary?: string; // For editing existing reports
+    defaultTasksCompleted?: number; // For editing existing reports
 }
 
 export function DailyReportDialog({
@@ -20,10 +22,12 @@ export function DailyReportDialog({
     onOverride,
     defaultDate,
     allowOverride = true,
+    defaultSummary = "",
+    defaultTasksCompleted = 0,
 }: DailyReportDialogProps) {
     const [reportDate, setReportDate] = useState(defaultDate || new Date().toISOString().split('T')[0]);
-    const [summary, setSummary] = useState("");
-    const [tasksCompleted, setTasksCompleted] = useState(0);
+    const [summary, setSummary] = useState(defaultSummary);
+    const [tasksCompleted, setTasksCompleted] = useState(defaultTasksCompleted);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
@@ -32,6 +36,13 @@ export function DailyReportDialog({
             setReportDate(defaultDate);
         }
     }, [defaultDate]);
+
+    useEffect(() => {
+        if (isOpen) {
+            setSummary(defaultSummary);
+            setTasksCompleted(defaultTasksCompleted);
+        }
+    }, [isOpen, defaultSummary, defaultTasksCompleted]);
 
     if (!isOpen) return null;
 
