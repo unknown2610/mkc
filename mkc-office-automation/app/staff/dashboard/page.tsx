@@ -25,7 +25,7 @@ export default function StaffDashboard() {
             try {
                 const state = await getStaffState();
                 setIsCheckedIn(state.isCheckedIn);
-                setCheckInTime(state.checkInTime ? new Date(state.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null);
+                setCheckInTime(state.checkInTime ? new Date(state.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : null);
                 setLastActivity(state.lastActivity);
                 setUserName(state.userName || "");
 
@@ -46,7 +46,7 @@ export default function StaffDashboard() {
             const result = await toggleCheckIn();
             if (result.success) {
                 setIsCheckedIn(!!result.isCheckedIn);
-                setCheckInTime(result.checkInTime ? new Date(result.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null);
+                setCheckInTime(result.checkInTime ? new Date(result.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : null);
             }
         } catch (e) {
             console.error(e);

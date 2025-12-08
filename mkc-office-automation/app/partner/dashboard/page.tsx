@@ -168,8 +168,8 @@ export default function PartnerDashboard() {
                                                         </p>
                                                         <p className="text-xs text-slate-400 mt-1">
                                                             {staff.status === 'online'
-                                                                ? `Since ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
-                                                                : `Last seen ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
+                                                                ? `Since ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'}`
+                                                                : `Last seen ${staff.lastUpdate ? new Date(staff.lastUpdate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'}`
                                                             }
                                                         </p>
                                                     </div>
