@@ -9,6 +9,7 @@ import { logoutAction, changePasswordAction } from "@/app/actions/auth";
 import { createTask, getStaffList } from "@/app/actions/tasks";
 import TaskHistory from "@/components/TaskHistory";
 import DailyReportsView from "@/components/DailyReportsView";
+import { StaffDetailDialog } from "@/components/StaffDetailDialog";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
@@ -16,6 +17,10 @@ export default function PartnerDashboard() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'history' | 'profile'>('overview');
     const [userName, setUserName] = useState("");
+
+    // Staff Detail Dialog state
+    const [selectedStaffId, setSelectedStaffId] = useState<number | null>(null);
+    const [showStaffDetail, setShowStaffDetail] = useState(false);
 
     // Fetch Staff Data
     const fetchStaffData = async () => {
@@ -143,7 +148,10 @@ export default function PartnerDashboard() {
                                         staffList.map((staff) => (
                                             <div
                                                 key={staff.id}
-                                                onClick={() => setSelectedStaff(staff.id)}
+                                                onClick={() => {
+                                                    setSelectedStaffId(staff.id);
+                                                    setShowStaffDetail(true);
+                                                }}
                                                 className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedStaff === staff.id ? 'bg-blue-50 dark:bg-blue-900/10' : ''}`}
                                             >
                                                 <div className="flex items-center justify-between">
