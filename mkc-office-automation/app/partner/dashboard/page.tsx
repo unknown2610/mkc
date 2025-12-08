@@ -12,6 +12,7 @@ import DailyReportsView from "@/components/DailyReportsView";
 import { StaffDetailDialog } from "@/components/StaffDetailDialog";
 import { QuickActionsPanel } from "@/components/QuickActionsPanel";
 import { TodaysOverview } from "@/components/TodaysOverview";
+import { CAOfficeMenu } from "@/components/CAOfficeMenu";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
@@ -201,8 +202,8 @@ export default function PartnerDashboard() {
 
                         {/* Detail View / Stats Sidebar */}
                         <div className="space-y-6">
-                            {/* Quick Actions */}
-                            <QuickActionsPanel />
+                            {/* CA Office Menu */}
+                            <CAOfficeMenu />
 
                             {/* Today's Overview */}
                             <TodaysOverview />
