@@ -201,40 +201,11 @@ export default function PartnerDashboard() {
 
                         {/* Detail View / Stats Sidebar */}
                         <div className="space-y-6">
-                            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-                                <h3 className="font-semibold text-lg mb-1">Quick Actions</h3>
-                                <p className="text-indigo-100 text-sm mb-6">Manage office operations</p>
+                            {/* Quick Actions */}
+                            <QuickActionsPanel />
 
-                                <div className="space-y-3">
-                                    <button className="w-full py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center">
-                                        <FileText className="w-4 h-4 mr-3" />
-                                        Request All Reports
-                                    </button>
-                                    <button className="w-full py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center">
-                                        <Bell className="w-4 h-4 mr-3" />
-                                        Send Announcement
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Today's Stats */}
-                            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                                <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Today's Overview</h3>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-500">Avg. Check-in Time</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">--:--</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-500">Reports Submitted</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">0</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-slate-500">Tasks Completed</span>
-                                        <span className="font-medium text-slate-900 dark:text-white">0</span>
-                                    </div>
-                                </div>
-                            </div>
+                            {/* Today's Overview */}
+                            <TodaysOverview />
                         </div>
                     </div>
                 )}
