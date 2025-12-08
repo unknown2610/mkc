@@ -130,6 +130,15 @@ export default function PartnerDashboard() {
                     >
                         My Profile
                     </button>
+                    <button
+                        onClick={() => setActiveTab('office')}
+                        className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === 'office'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                            }`}
+                    >
+                        Office
+                    </button>
                 </div>
 
                 {/* Content Area */}
@@ -202,9 +211,6 @@ export default function PartnerDashboard() {
 
                         {/* Detail View / Stats Sidebar */}
                         <div className="space-y-6">
-                            {/* CA Office Menu */}
-                            <CAOfficeMenu />
-
                             {/* Today's Overview */}
                             <TodaysOverview />
                         </div>
