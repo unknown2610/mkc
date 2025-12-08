@@ -1,4 +1,36 @@
-color: string;
+"use client";
+
+import React, { useState } from 'react';
+import {
+    Calendar,
+    FileCheck,
+    Users,
+    DollarSign,
+    FileText,
+    Bell,
+    Clock,
+    AlertCircle,
+    TrendingUp,
+    CheckCircle,
+    Activity,
+    ArrowRight,
+    ExternalLink,
+    Download,
+    X
+} from 'lucide-react';
+
+interface SubItem {
+    name: string;
+    icon: any;
+    description: string;
+    benefits: string[];
+    demoComponent: () => React.ReactElement;
+}
+
+interface Category {
+    name: string;
+    items: SubItem[];
+    color: string;
 }
 
 // Demo data
