@@ -53,9 +53,14 @@ export function ComplianceTracker() {
 
     const loadCompliances = async () => {
         setLoading(true);
+        console.log('Loading compliances for category:', category);
         const result = await getAllCompliances(category);
+        console.log('Compliance result:', result);
         if (result.success && result.data) {
+            console.log('Setting compliances:', result.data.length, 'items');
             setCompliances(result.data);
+        } else {
+            console.error('Failed to load compliances:', result.error);
         }
         setLoading(false);
     };
@@ -171,8 +176,8 @@ export function ComplianceTracker() {
                                 key={cat}
                                 onClick={() => setCategory(cat)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${category === cat
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 {cat === 'ALL' ? 'All' : cat === 'DIRECT_TAX' ? 'Direct Tax' : 'GST'}
