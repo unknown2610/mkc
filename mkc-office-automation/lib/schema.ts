@@ -52,3 +52,15 @@ export const activityLogs = pgTable('activity_logs', {
     activity: text('activity').notNull(),
     timestamp: timestamp('timestamp').defaultNow().notNull(),
 });
+
+export const complianceItems = pgTable("compliance_items", {
+    id: serial("id").primaryKey(),
+    category: text("category").notNull(), // 'DIRECT_TAX' or 'INDIRECT_TAX'
+    particular: text("particular").notNull(),
+    description: text("description").notNull(),
+    frequency: text("frequency").notNull(), // 'MONTHLY', 'QUARTERLY', 'ANNUAL', 'CUSTOM'
+    filingDates: text("filing_dates").notNull(), // JSON array of dates/rules
+    isActive: integer("is_active").default(1).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

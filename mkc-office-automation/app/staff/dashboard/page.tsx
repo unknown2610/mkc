@@ -12,6 +12,7 @@ import { PendingReportsAlert } from "@/components/PendingReportsAlert";
 import { overrideCheckout } from "@/app/actions/reports";
 import { StaffReportsView } from "@/components/StaffReportsView";
 import { StaffTaskHistory } from "@/components/StaffTaskHistory";
+import { StaffComplianceOverview } from "@/components/StaffComplianceOverview";
 
 export default function StaffDashboard() {
     const [isCheckedIn, setIsCheckedIn] = useState(false);
