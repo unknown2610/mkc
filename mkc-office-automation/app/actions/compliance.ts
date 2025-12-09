@@ -63,7 +63,7 @@ export async function getUpcomingCompliances(days: number = 30) {
 // Get all compliance items (with optional filtering)
 export async function getAllCompliances(category?: string) {
     const session = await getSession();
-    if (!session?.userId || session.role !== 'partner') {
+    if (!session?.userId) {
         return { success: false, error: "Unauthorized" };
     }
 
@@ -127,7 +127,7 @@ export async function getStaffCompliances() {
 // Add new compliance item (partner only)
 export async function addComplianceItem(data: ComplianceItem) {
     const session = await getSession();
-    if (!session?.userId || session.role !== 'partner') {
+    if (!session?.userId) {
         return { success: false, error: "Unauthorized" };
     }
 
@@ -151,7 +151,7 @@ export async function addComplianceItem(data: ComplianceItem) {
 // Update compliance item
 export async function updateComplianceItem(id: number, data: Partial<ComplianceItem>) {
     const session = await getSession();
-    if (!session?.userId || session.role !== 'partner') {
+    if (!session?.userId) {
         return { success: false, error: "Unauthorized" };
     }
 
@@ -174,7 +174,7 @@ export async function updateComplianceItem(id: number, data: Partial<ComplianceI
 // Toggle compliance status (active/archived)
 export async function toggleComplianceStatus(id: number) {
     const session = await getSession();
-    if (!session?.userId || session.role !== 'partner') {
+    if (!session?.userId) {
         return { success: false, error: "Unauthorized" };
     }
 
