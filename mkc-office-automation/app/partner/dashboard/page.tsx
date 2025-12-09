@@ -13,12 +13,14 @@ import { StaffDetailDialog } from "@/components/StaffDetailDialog";
 import { QuickActionsPanel } from "@/components/QuickActionsPanel";
 import { TodaysOverview } from "@/components/TodaysOverview";
 import { CAOfficeMenu } from "@/components/CAOfficeMenu";
+import { ComplianceTracker } from "@/components/ComplianceTracker";
 
 export default function PartnerDashboard() {
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
     const [staffList, setStaffList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'assign' | 'history' | 'profile' | 'office'>('overview');
+    const [officeView, setOfficeView] = useState<'menu' | 'compliance'>('menu');
     const [userName, setUserName] = useState("");
 
     // Staff Detail Dialog state
@@ -242,8 +244,31 @@ export default function PartnerDashboard() {
                 )}
 
                 {activeTab === 'office' && (
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm  p-8">
-                        <CAOfficeMenu />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-8">
+                        {/* Office View Selector */}
+                        <div className="flex gap-3 mb-6">
+                            <button
+                                onClick={() => setOfficeView('menu')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${officeView === 'menu'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                            >
+                                Office Menu
+                            </button>
+                            <button
+                                onClick={() => setOfficeView('compliance')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${officeView === 'compliance'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                            >
+                                Compliance Tracker
+                            </button>
+                        </div>
+
+                        {/* Show selected view */}
+                        {officeView === 'menu' ? <CAOfficeMenu /> : <ComplianceTracker />}
                     </div>
                 )}
             </div>
