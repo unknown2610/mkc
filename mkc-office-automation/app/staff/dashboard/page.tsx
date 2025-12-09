@@ -224,6 +224,9 @@ export default function StaffDashboard() {
                                         </div>
                                     </div>
                                 )}
+
+                                {/* Compliance Overview Widget */}
+                                <StaffComplianceOverview />
                             </div>
                         )}
 

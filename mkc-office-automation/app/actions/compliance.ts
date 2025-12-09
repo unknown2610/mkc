@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { complianceItems } from "@/lib/schema";
-import { getSession } from "./auth";
+import { getSession } from "@/lib/auth";
 import { eq, and, or, like, desc } from "drizzle-orm";
 
 interface ComplianceItem {
