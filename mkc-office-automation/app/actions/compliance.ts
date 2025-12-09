@@ -285,8 +285,8 @@ function parseIndianDate(dateStr: string, year: number): Date {
 // Seed compliance data from the provided image
 export async function seedComplianceData() {
     const session = await getSession();
-    if (!session?.userId || session.role !== 'partner') {
-        return { success: false, error: "Unauthorized" };
+    if (!session?.userId) {
+        return { success: false, error: "Unauthorized - Please log in" };
     }
 
     try {
